@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build-jar" name="TP1">
+<project basedir="." default="build-jar" name="TP2">
 	<property name="debuglevel" value="source,lines,vars" />
 	<path id="TP2.classpath">
 		<pathelement location="bin" />
@@ -16,6 +16,7 @@
 		<delete dir="bin" />
 		<delete file="server.jar" />
 		<delete file="client.jar" />
+		<delete file="ServerInterface.jar" />
 	</target>
 	<target depends="init" name="build-class">
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
@@ -24,6 +25,7 @@
 		</javac>
 	</target>
 	<target depends="build-class" name="build-jar">
+		<jar destfile="ServerInterface.jar" basedir="bin" includes="ServerInterface.java" update="false" />
 		<jar destfile="server.jar" basedir="bin" includes="server.java" update="false" />
 		<jar destfile="client.jar" basedir="bin" includes="client.java" update="false" />
 	</target>

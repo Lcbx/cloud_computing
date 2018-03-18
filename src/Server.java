@@ -1,6 +1,7 @@
-package tp2.server;
+package tp2;
 
 import java.rmi.ConnectException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -10,7 +11,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.io.*;
 
-public class Server extends Remote {
+import tp2.ServerInterface;
+
+public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
 		Server server = new Server();
@@ -24,7 +27,7 @@ public class Server extends Remote {
 
 		try {
 		
-			Server stub = (Server) UnicastRemoteObject.exportObject(this, 0);
+			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, 0);
 
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind("server", stub);

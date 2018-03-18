@@ -1,4 +1,4 @@
-package tp2.client;
+package tp2;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -9,7 +9,7 @@ import java.rmi.registry.Registry;
 import java.util.*;
 import java.io.*;
 
-import Server;
+import tp2.ServerInterface;
 
 public class Client {
 	
@@ -26,11 +26,11 @@ public class Client {
 	}
 
 	private ServerInterface loadServerStub(String hostname) {
-		Server stub = null;
+		ServerInterface stub = null;
 		try {
 			
 			Registry registry = LocateRegistry.getRegistry(hostname);
-			stub = (Server) registry.lookup("server");
+			stub = (ServerInterface) registry.lookup("server");
 			
 		} catch (NotBoundException e) {
 			System.out.println("Erreur: Le nom '" + e.getMessage() 	+ "' n'est pas défini dans le registre.");
