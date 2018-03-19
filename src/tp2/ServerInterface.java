@@ -16,6 +16,6 @@ class Result{
 }
 
 public interface ServerInterface extends Remote {
-	public int getWorkCapacity();
-	public Result sendWork(Data[] data);
+	public int getWorkCapacity() throws RemoteException;
+	public Result sendWork(Data[] data) throws RemoteException;
 }

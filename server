@@ -8,4 +8,4 @@ popd > /dev/null
 java -cp "$basepath"/server.jar:"$basepath"/ServerInterface.jar \
   -Djava.rmi.server.codebase=file:"$basepath"/ServerInterface.jar \
   -Djava.security.policy="$basepath"/policy \
-  tp2.Server
+  tp2.Server $*

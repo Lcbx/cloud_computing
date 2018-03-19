@@ -18,6 +18,7 @@ public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
 		if(args.length < 4){
+			System.out.println(args.length);
 			System.out.println("expected arguments : serverName, port, workCapacity, maliciousness");
 			return;
 		}
@@ -58,7 +59,7 @@ public class Server implements ServerInterface {
 	float m;
 	java.util.Random random;
 	
-	public Server(String serverName, int serverPort, int workCapacity, float maliciousness) {
+	public Server(String serverName, int serverPort, int workCapacity, float maliciousness)  {
 		super();
 		name = serverName;
 		port = serverPort;
@@ -68,12 +69,12 @@ public class Server implements ServerInterface {
 	}
 	
 	@Override
-	public int getWorkCapacity(){
+	public int getWorkCapacity() throws RemoteException{
 		return Q;
 	}
 	
 	@Override
-	public Result sendWork(Data[] data){
+	public Result sendWork(Data[] data) throws RemoteException {
 		
 		Result result = new Result();
 		
