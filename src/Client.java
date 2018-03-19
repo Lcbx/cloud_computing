@@ -11,11 +11,6 @@ import java.io.*;
 
 import tp2.ServerInterface;
 
-/* Object for the operations in the file */
-class Data{
-	String name;
-	int value;
-}
 
 public class Client {
 

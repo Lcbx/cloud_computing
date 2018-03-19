@@ -4,6 +4,18 @@ import java.rmi.RemoteException;
 
 import java.util.*;
 
+/* Object for the operations in the file */
+class Data{
+	String name;
+	int value;
+}
+
+class Result{
+	boolean accepted;
+	int value;
+}
+
 public interface ServerInterface extends Remote {
-	public void sendWork(Data[] data);
+	public int getWorkCapacity();
+	public Result sendWork(Data[] data);
 }

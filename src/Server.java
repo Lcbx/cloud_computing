@@ -16,7 +16,7 @@ import tp2.ServerInterface;
 public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
-		Server server = new Server();
+		Server server = new Server(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Float.parseFloat(args[3]) );
 		server.run();
 	}
 
@@ -29,8 +29,8 @@ public class Server implements ServerInterface {
 		
 			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, 0);
 
-			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind("server", stub);
+			Registry registry = LocateRegistry.getRegistry(port);
+			registry.rebind(name, stub);
 			System.out.println("Server ready.");
 		
 		
@@ -47,8 +47,26 @@ public class Server implements ServerInterface {
 		
 	}
 	
-	public Server() {
+	String name;
+	int port;
+	int Q;
+	float m;
+	
+	public Server(String serverName, int serverPort, int workCapacity, float maliciousness) {
 		super();
+		name = serverName;
+		port = serverPort;
+		Q = workCapacity;
+		m = maliciousness;
 	}
-
+	
+	@Override
+	public int getWorkCapacity(){
+		return Q;
+	}
+	
+	@Override
+	public Result sendWork(Data[] data){
+		return new Result();
+	}
 }
