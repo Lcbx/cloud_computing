@@ -30,12 +30,14 @@ public class Client {
 	/* Declaration of 4 serverStubs, 4 being the maximum number of servers used in this experiment */
 	private ServerInterface[] serverStubs = new ServerInterface[4];
 	
-	/* Declaration of number of data */
-	private int length;
+	/* Declaration of number of data (they're all the same in all the files (100)) */
+	private int length = 100;
 
 	/* Array of type Data containing all the data from the text file */
 	public Data[] data;
 
+	/* Port used to connect the Client (5000 by default to work in the labs) */
+	int port = 5000;
 
 	/* Declaration of threads for multithreading */
 	Thread[] myThreads;
@@ -67,7 +69,7 @@ public class Client {
 		ServerInterface stub = null;
 		try {
 			
-			Registry registry = LocateRegistry.getRegistry(hostname);
+			Registry registry = LocateRegistry.getRegistry(hostname, port);
 			stub = (ServerInterface) registry.lookup("server");
 			
 		} catch (NotBoundException e) {
