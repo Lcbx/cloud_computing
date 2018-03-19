@@ -85,18 +85,38 @@ public class Client {
 		}
 	}
 
-	private void distribution(Data[][] subLists, int nbServers){
+	private Data[][] distribution(Data[][] subLists, int nbServers){
 		int sizeDataList = data.length;
 		int remainingSize = sizeDataList;
 		int currentSize = 0;
+		int[] capacities = new int[nbServers];
+		int totalCapacities = 0;
 
-		for(int i = 0; i < subLists.length-1; i++){
+		for(int i = 0; i < nbServers; i++){
+			capacities[i] = serverStubs[i].getWorkCapacity();
+			totalCapacities += capacities[i];
+		}
+
+		for(int i = 0; i < subLists.length; i++){
+			currentSize = (int)(capacities[i] / totalCapacities);
+			subLists[i] = new Data[currentSize];
+			subLists[i] = Arrays.copyOfRange(data, sizeDataList - remainingSize, currentSize);
+			remainingSize -= currentSize;
+		}
+		subLists[nbServers-1] = new Data[remainingSize];
+
+		/*for(int i = 0; i < subLists.length-1; i++){
 			currentSize = (sizeDataList + 1)/nbServers;
 			subLists[i] = new Data[currentSize];
 			remainingSize -= currentSize;
 		}
 		subLists[nbServers-1] = new Data[remainingSize];
+		*/
+		
+		return subLists;
+	}
 
+	private void sendToServers(Data[][] subLists, int nbServers){
 		for(int i = 0; i < nbServers; i++){
 			serverStubs[i].sendWork(subLists[i]);
 		}
@@ -109,22 +129,39 @@ public class Client {
 			System.setSecurityManager(new SecurityManager());
 		}
 		
-		/* If the file name is specified */
+		/* If the file name is specified, load its data */
 		if(args.length >= 1){
 			loadData(args[0]);
 		}
-		int nbServers = args.length - 1;
 
+		boolean modeSecured;
+
+		/* Define the mode */
+		if(args.length >= 2){
+			if(args[1] == "s"){modeSecured = true;}
+			else if(args[1] == "n"){modeSecured = false;}
+		}
+		
+
+		/* Number of computing servers */
+		int nbServers = args.length - 2;
+
+		/* Server stubs loading */
 		for(int i = 0; i < nbServers; i++){
-			serverStubs[i] = loadServerStub(args[i+1]);
+			serverStubs[i] = loadServerStub(args[i+2]);
 		}
 		
 		Data[][] subLists = new Data[nbServers][];
 
 		/* Determine work redistribution (need to keep doing that whenever something fails?)*/
+		subLists = distribution(subLists, nbServers);
+
 		/* Send Data */
-		distribution(subLists, nbServers);
+		sendToServers(subLists, nbServers);
+
 		/* Receive Data */
+
+
 		/* Display final answer */
 	}
 	

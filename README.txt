@@ -7,3 +7,6 @@ start.sh build les classes, lance rmiregistry, et pourra faire les expériences p
 
 pour lancer un main à partir du jar, appeler :
 java -jar <nom_du_jar>
+
+Pour le repartiteur, voici les arguments:
+java -jar <nom_du_jar> [Nom_Fichier_Texte] [s pour securise, n pour non-securise] [adresseIP1 a adresseIP4] 
