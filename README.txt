@@ -7,3 +7,5 @@ start.sh build les classes, lance rmiregistry, et pourra faire les expériences p
 
 pour lancer un main à partir du jar, appeler :
 java -jar <nom_du_jar>
+mais pour que les permissions soient les bonnes, utiliser les fichiers client et server ; Ex ./client <params>
+(ce sont des fichiers bash, édite-les pour voir les commandes utilisées)
