@@ -17,6 +17,10 @@ import tp2.Operations;
 public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
+		if(arg.length < 4){
+			System.out.println("expected arguments : serverName, port, workCapacity, maliciousness");
+			return;
+		}
 		Server server = new Server(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Float.parseFloat(args[3]) );
 		server.run();
 	}
