@@ -25,8 +25,16 @@
 		</javac>
 	</target>
 	<target depends="build-class" name="build-jar">
-		<jar destfile="ServerInterface.jar" basedir="bin" includes="ServerInterface.java" update="false" />
-		<jar destfile="server.jar" basedir="bin" includes="server.java" update="false" />
-		<jar destfile="client.jar" basedir="bin" includes="client.java" update="false" />
+		<jar destfile="ServerInterface.jar" basedir="bin" includes="tp2/**" update="false" />
+		<jar destfile="server.jar" basedir="bin" includes="tp2/**" update="false" >
+		<manifest>
+			<attribute name="Main-Class" value="tp2.Server"/>
+		</manifest>
+		</jar>
+		<jar destfile="client.jar" basedir="bin" includes="tp2/**" update="false" >
+		<manifest>
+			<attribute name="Main-Class" value="tp2.Client"/>
+		</manifest>
+		</jar>
 	</target>
 </project>
