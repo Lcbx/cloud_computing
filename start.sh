@@ -3,6 +3,6 @@
 ant
 
 # start the rmiregistry
-#"$JAVA_HOME/bin/rmiregistry" &
+"$JAVA_HOME/bin/rmiregistry" &
 
 
