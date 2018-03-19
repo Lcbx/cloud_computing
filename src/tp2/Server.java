@@ -15,7 +15,8 @@ import tp2.ServerInterface;
 import tp2.Operations;
 
 public class Server implements ServerInterface {
-
+	
+	//main
 	public static void main(String[] args) {
 		if(args.length < 4){
 			System.out.println(args.length);
@@ -25,7 +26,29 @@ public class Server implements ServerInterface {
 		Server server = new Server(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Float.parseFloat(args[3]) );
 		server.run();
 	}
-
+	
+	// the name assigned to the server object by the rmiregistry
+	String name;
+	// the port used by the rmiregistry
+	int port;
+	// the number of operations for a task to be guaranted to be accepted
+	int Q;
+	// the tendency to return false results
+	float m;
+	// a random number generator object
+	java.util.Random random = new Random();
+	
+	
+	public Server(String serverName, int serverPort, int workCapacity, float maliciousness)  {
+		super();
+		name = serverName;
+		port = serverPort;
+		Q = workCapacity;
+		m = maliciousness;
+	}
+	
+	
+	// launches the server service
 	private void run() {
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
@@ -34,8 +57,10 @@ public class Server implements ServerInterface {
 		try {
 		
 			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, 0);
-
+			
+			// finds the registry based on port (!)
 			Registry registry = LocateRegistry.getRegistry(port);
+			// binds, in the registry, its instance to its name
 			registry.rebind(name, stub);
 			System.out.println("Server ready.");
 		
@@ -53,45 +78,42 @@ public class Server implements ServerInterface {
 		
 	}
 	
-	String name;
-	int port;
-	int Q;
-	float m;
-	java.util.Random random;
-	
-	public Server(String serverName, int serverPort, int workCapacity, float maliciousness)  {
-		super();
-		name = serverName;
-		port = serverPort;
-		Q = workCapacity;
-		m = maliciousness;
-		random = new Random();
-	}
-	
 	@Override
 	public int getWorkCapacity() throws RemoteException{
 		return Q;
 	}
 	
+	
+	// receives and and does the work depending on server parameters
 	@Override
 	public Result sendWork(Data[] data) throws RemoteException {
 		
+		// a result object that will be sent back
 		Result result = new Result();
 		
+		// workload size (number of operations)
 		int u = data.length;
+		
+		// we compute the chance to defect based on that and workCapacity
 		float chanceToDefect= ((float) (u-Q)) /Q;
 		
+		// if the server defects, it stops here
 		if (random.nextFloat() < chanceToDefect){
 			result.accepted = false; 
 		}
 		else{
 			
+			// otherwise the work is accepted
 			result.accepted = true;
 			
+			// there's still the chance that it sends back the wrong answer
 			if (random.nextFloat() < m){
+				// a random wrong answer
 				result.value = (random.nextInt()%4000);
 			}
 			else {
+				
+				// otherwise we compute and send the right answer
 				result.value = execute(data);
 			}
 		}
@@ -99,9 +121,16 @@ public class Server implements ServerInterface {
 		return result;
 	}
 	
+	// the computation function
 	private int execute(Data[] operations){
-		int result = 0;
+		
+		// the result that will be sent back
+		long result = 0;
+		
+		// for each operation
 		for(Data operation : operations){
+			
+			// we apply the right function and add it to the sum
 			switch(operation.name){
 				case "prime":{
 					result += (Operations.prime(operation.value)%4000);
@@ -113,7 +142,9 @@ public class Server implements ServerInterface {
 				}
 			}
 		}
-		return result;
+		
+		// a last modulo so the sum is within expected range
+		return ((int) result%4000);
 	}
 	
 	
