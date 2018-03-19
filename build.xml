@@ -14,9 +14,11 @@
 	</target>
 	<target name="clean">
 		<delete dir="bin" />
+		<delete file="LDAP.jar" />
 		<delete file="server.jar" />
 		<delete file="client.jar" />
 		<delete file="ServerInterface.jar" />
+		<delete file="LDAPInterface.jar" />
 	</target>
 	<target depends="init" name="build-class">
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
@@ -25,6 +27,12 @@
 		</javac>
 	</target>
 	<target depends="build-class" name="build-jar">
+		<jar destfile="LDAPInterface.jar" basedir="bin" includes="tp2/**" update="false" />
+		<jar destfile="LDAP.jar" basedir="bin" includes="tp2/**" update="false"  >
+		<manifest>
+			<attribute name="Main-Class" value="tp2.LDAP"/>
+		</manifest>
+		</jar>
 		<jar destfile="ServerInterface.jar" basedir="bin" includes="tp2/**" update="false" />
 		<jar destfile="server.jar" basedir="bin" includes="tp2/**" update="false" >
 		<manifest>

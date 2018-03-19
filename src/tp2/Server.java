@@ -55,11 +55,12 @@ public class Server implements ServerInterface {
 		}
 
 		try {
-		
-			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, 0);
+			
+			// chooses the port the object will be exported on
+			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, port);
 			
 			// finds the registry based on port (!)
-			Registry registry = LocateRegistry.getRegistry(port);
+			Registry registry = LocateRegistry.getRegistry(5000);
 			// binds, in the registry, its instance to its name
 			registry.rebind(name, stub);
 			System.out.println("Server ready.");
