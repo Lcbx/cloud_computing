@@ -6,6 +6,9 @@
  * @author Simon Delisle et Francois Doray
  *
  */
+ 
+ package tp2;
+ 
 public class Operations {
 
 	public static int pell(int x) {

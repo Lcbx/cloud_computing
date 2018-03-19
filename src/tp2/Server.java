@@ -12,6 +12,7 @@ import java.util.*;
 import java.io.*;
 
 import tp2.ServerInterface;
+import tp2.Operations;
 
 public class Server implements ServerInterface {
 
@@ -51,6 +52,7 @@ public class Server implements ServerInterface {
 	int port;
 	int Q;
 	float m;
+	java.util.Random random;
 	
 	public Server(String serverName, int serverPort, int workCapacity, float maliciousness) {
 		super();
@@ -58,6 +60,7 @@ public class Server implements ServerInterface {
 		port = serverPort;
 		Q = workCapacity;
 		m = maliciousness;
+		random = new Random();
 	}
 	
 	@Override
@@ -67,6 +70,67 @@ public class Server implements ServerInterface {
 	
 	@Override
 	public Result sendWork(Data[] data){
-		return new Result();
+		
+		Result result = new Result();
+		
+		int u = data.length;
+		float chanceToDefect= ((float) (u-Q)) /Q;
+		
+		if (random.nextFloat() < chanceToDefect){
+			result.accepted = false; 
+		}
+		else{
+			
+			result.accepted = true;
+			
+			if (random.nextFloat() < m){
+				result.value = (random.nextInt()%4000);
+			}
+			else {
+				result.value = execute(data);
+			}
+		}
+		
+		return result;
 	}
+	
+	private int execute(Data[] operations){
+		int result = 0;
+		for(Data operation : operations){
+			switch(operation.name){
+				case "prime":{
+					result += (Operations.prime(operation.value)%4000);
+					break;
+			}
+				case "pell":{
+					result += (Operations.pell(operation.value)%4000);
+					break;
+				}
+			}
+		}
+		return result;
+	}
+	
+	
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
