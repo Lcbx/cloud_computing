@@ -88,14 +88,14 @@ public class Server implements ServerInterface {
 	
 	// receives and and does the work depending on server parameters
 	@Override
-	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(AbstractMap.SimpleEntry<String, Integer>[] data) throws RemoteException {
+	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(ArrayList<AbstractMap.SimpleEntry<String, Integer>> data) throws RemoteException {
 		
 		// a result object that will be sent back
 		boolean accepted = false;
 		int result = 0;
 		
 		// workload size (number of operations)
-		int u = data.length;
+		int u = data.size();
 		
 		// we compute the chance to defect based on that and workCapacity
 		float chanceToDefect= ((float) (u-Q)) /Q;
@@ -125,7 +125,7 @@ public class Server implements ServerInterface {
 	}
 	
 	// the computation function
-	private int execute(AbstractMap.SimpleEntry<String, Integer>[] operations){
+	private int execute(ArrayList<AbstractMap.SimpleEntry<String, Integer>> operations){
 		
 		// the result that will be sent back
 		long result = 0;

@@ -6,5 +6,5 @@ import java.util.*;
 
 public interface ServerInterface extends Remote {
 	public int getWorkCapacity() throws RemoteException;
-	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(AbstractMap.SimpleEntry<String, Integer>[] data) throws RemoteException; // accepted work, result
+	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(ArrayList<AbstractMap.SimpleEntry<String, Integer>> data) throws RemoteException; // accepted work, result
 }
