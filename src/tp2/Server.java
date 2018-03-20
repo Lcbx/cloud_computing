@@ -88,7 +88,7 @@ public class Server implements ServerInterface {
 	
 	// receives and and does the work depending on server parameters
 	@Override
-	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(Data[] data) throws RemoteException {
+	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(AbstractMap.SimpleEntry<String, Integer>[] data) throws RemoteException {
 		
 		// a result object that will be sent back
 		boolean accepted = false;
@@ -125,22 +125,22 @@ public class Server implements ServerInterface {
 	}
 	
 	// the computation function
-	private int execute(Data[] operations){
+	private int execute(AbstractMap.SimpleEntry<String, Integer>[] operations){
 		
 		// the result that will be sent back
 		long result = 0;
 		
 		// for each operation
-		for(Data operation : operations){
+		for(AbstractMap.SimpleEntry<String, Integer> operation : operations){
 			
 			// we apply the right function and add it to the sum
-			switch(operation.name){
+			switch(operation.getKey()){
 				case "prime":{
-					result += (Operations.prime(operation.value)%4000);
+					result += (Operations.prime(operation.getValue())%4000);
 					break;
 			}
 				case "pell":{
-					result += (Operations.pell(operation.value)%4000);
+					result += (Operations.pell(operation.getValue())%4000);
 					break;
 				}
 			}

@@ -34,7 +34,7 @@ public class Client {
 	private int length = 100;
 
 	/* Array of type Data containing all the data from the text file */
-	public Data[] data;
+	public AbstractMap.SimpleEntry<String, Integer>[] data;
 
 	/* Port used to connect the Client (5000 by default to work in the labs) */
 	int port = 5000;
@@ -43,7 +43,7 @@ public class Client {
 	Thread[] myThreads;
 
 	/* Array containing the results from the computing servers */
-	Result[] results;
+	AbstractMap.SimpleEntry<Boolean, Integer>[] results;
 
 
 	/*
@@ -96,7 +96,7 @@ public class Client {
 			String line = null;
 			String[] tokens;
 			int index = 0;			
-			data = new Data[length];
+			data = new AbstractMap.SimpleEntry<String, Integer>[length];
 
 			/* Relative path of file */
 			String filePath = "operations/" + fileName;
@@ -111,9 +111,9 @@ public class Client {
 				tokens = line.split(" ");
 				if(tokens.length != 2){throw new IllegalArgumentException();}
 				/* Store them in the object attributes as String and Int */
-				data[index] = new Data();
-				data[index].name = tokens[0];
-				data[index].value = Integer.parseInt(tokens[1]);
+				data[index] = new AbstractMap.SimpleEntry<String, Integer>(tokens[0], Integer.parseInt(tokens[1]));
+				//data[index].name = tokens[0];
+				//data[index].value = Integer.parseInt(tokens[1]);
 
 				index++;	
 			}
@@ -139,7 +139,7 @@ public class Client {
 	*
 	*	Description: Computes the sub lists to distribution according to number of computing servers active.
 	*/
-	private void distribution(Data[][] subLists, int nbServers){
+	private void distribution(AbstractMap.SimpleEntry<String, Integer>[][] subLists, int nbServers){
 
 		int totalData = data.length;
 		/* Number of data */
@@ -164,11 +164,11 @@ public class Client {
 		/* Distribution function: Total data * (capacity(i) / (sum(capacities))) */
 		for(int i = 0; i < subLists.length-1; i++){
 			currentSize = (int)(capacities[i] / totalCapacities);
-			subLists[i] = new Data[currentSize];
+			subLists[i] = new AbstractMap.SimpleEntry<String, Integer>[currentSize];
 			subLists[i] = Arrays.copyOfRange(data, totalData - remainingSize, currentSize);
 			remainingSize -= currentSize;
 		}
-		subLists[nbServers-1] = new Data[remainingSize];
+		subLists[nbServers-1] = new AbstractMap.SimpleEntry<String, Integer>[remainingSize];
 		subLists[nbServers-1] = Arrays.copyOfRange(data, totalData - remainingSize, currentSize);
 		
 		/* Function call to send the lists to each server */
@@ -184,9 +184,9 @@ public class Client {
 	*
 	*	Description: Sends each sub list to its appropriate to server.
 	*/
-	private void sendToServers(Data[][] subLists, int nbServers){
+	private void sendToServers(AbstractMap.SimpleEntry<String, Integer>[][] subLists, int nbServers){
 
-		results = new Result[nbServers];
+		results = new AbstractMap.SimpleEntry<Boolean, Integer>[nbServers];
 
 		/* For each server, send data in a different thread */
 		for(int i = 0; i < nbServers; i++){
@@ -229,10 +229,10 @@ public class Client {
 	*
 	*	Description: Verifies if the sub results are all valid/accepted. If not, returns to distribution function.
 	*/
-	private void verifyResults(Data[][] subLists, int nbServers){
+	private void verifyResults(AbstractMap.SimpleEntry<String, Integer>[][] subLists, int nbServers){
 		
 		for(int i = 0; i < nbServers; i++){
-			if(results[i].accepted == false){
+			if(results[i].getKey() == false){
 				distribution(subLists, nbServers);
 			}
 		}
@@ -251,7 +251,7 @@ public class Client {
 		long finalResult = 0;
 
 		for(int i = 0; i < nbServers; i++){
-			finalResult += results[i].value;
+			finalResult += results[i].getValue();
 		}
 
 		finalResult = finalResult%4000;
@@ -295,7 +295,7 @@ public class Client {
 		}
 		
 		/* Sublists to split task between the servers */
-		Data[][] subLists = new Data[nbServers][];
+		AbstractMap.SimpleEntry<String, Integer>[][] subLists = new AbstractMap.SimpleEntry<String, Integer>[nbServers][];
 
 		/* Determine work redistribution (need to keep doing that whenever something fails?)*/
 		distribution(subLists, nbServers);
