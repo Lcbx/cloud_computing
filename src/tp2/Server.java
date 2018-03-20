@@ -20,7 +20,7 @@ public class Server implements ServerInterface {
 	//main
 	public static void main(String[] args) {
 		if(args.length < 4){
-			System.out.println(args.length);
+			//System.out.println(args.length);
 			System.out.println("expected arguments : serverName, port, workCapacity, maliciousness");
 			return;
 		}
@@ -132,6 +132,8 @@ public class Server implements ServerInterface {
 		
 		// for each operation
 		for(AbstractMap.SimpleEntry<String, Integer> operation : operations){
+			
+			System.out.println(operation.getKey() + " " + Integer.toString(operation.getValue()));
 			
 			// we apply the right function and add it to the sum
 			switch(operation.getKey()){

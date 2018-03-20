@@ -34,16 +34,16 @@ public class Client {
 	private int length = 100;
 
 	/* Array of type Data containing all the data from the text file */
-	public ArrayList<AbstractMap.SimpleEntry<String, Integer>> data;
+	public List<AbstractMap.SimpleEntry<String, Integer>> data;
 
 	/* Port used to connect the Client (5000 by default to work in the labs) */
 	int port = 5000;
 
 	/* Declaration of threads for multithreading */
 	Thread[] myThreads;
-
-	/* Array containing the results from the computing servers */
-	ArrayList<AbstractMap.SimpleEntry<Boolean, Integer>> results;
+	
+	/* Declaration of threads for multithreading */
+	int nbServers = 0;
 
 
 	/*
@@ -95,7 +95,7 @@ public class Client {
 		try{
 			String line = null;
 			String[] tokens;
-			int index = 0;			
+			//int index = 0;			
 			data = new ArrayList(length);
 
 			/* Relative path of file */
@@ -114,8 +114,8 @@ public class Client {
 				//data.add(index, AbstractMap.SimpleEntry<String, Integer>(tokens[0], Integer.parseInt(tokens[1])));
 				//data[index].name = tokens[0];
 				//data[index].value = Integer.parseInt(tokens[1]);
-
-				index++;	
+				data.add( new AbstractMap.SimpleEntry<String, Integer>(tokens[0], Integer.parseInt(tokens[1]) ) );
+				//index++;	
 			}
 
 			/* Close text file */
@@ -139,7 +139,7 @@ public class Client {
 	*
 	*	Description: Computes the sub lists to distribution according to number of computing servers active.
 	*/
-	private void distribution(ArrayList<ArrayList<AbstractMap.SimpleEntry<String, Integer>>> subLists, int nbServers){
+	private List<AbstractMap.SimpleEntry<Boolean, Integer>> distribution(List<List<AbstractMap.SimpleEntry<String, Integer>>> subLists, int nbServers){
 
 		int totalData = data.size();
 		/* Number of data */
@@ -162,17 +162,17 @@ public class Client {
 		}
 
 		/* Distribution function: Total data * (capacity(i) / (sum(capacities))) */
-		for(int i = 0; i < subLists.size()-1; i++){
+		for(int i = 0; i < nbServers-1; i++){
 			currentSize = (int)(capacities[i] / totalCapacities);
 			//subLists[i] = new ArrayList<AbstractMap.SimpleEntry<String, Integer>>(currentSize);
-			subLists.get(i).set(data.subList(totalData-remainingSize, totalData-remainingSize+currentSize));
+			subLists.add(data.subList(totalData-remainingSize, totalData-remainingSize+currentSize));
 			remainingSize -= currentSize;
 		}
 		//subLists[nbServers-1] = new ArrayList<AbstractMap.SimpleEntry<String, Integer>>(remainingSize);
-		subLists.get(nbServers-1).set(data.subList(totalData-remainingSize, totalData-remainingSize+currentSize));
+		subLists.add(data.subList(totalData-remainingSize, totalData));
 		
 		/* Function call to send the lists to each server */
-		sendToServers(subLists, nbServers);
+		return sendToServers(subLists, nbServers);
 	}
 
 	/*
@@ -184,40 +184,50 @@ public class Client {
 	*
 	*	Description: Sends each sub list to its appropriate to server.
 	*/
-	private void sendToServers(ArrayList<ArrayList<AbstractMap.SimpleEntry<String, Integer>>> subLists, int nbServers){
+	private List<AbstractMap.SimpleEntry<Boolean, Integer>> sendToServers(List<List<AbstractMap.SimpleEntry<String, Integer>>> subLists, int nbServers){
 
-		results = new ArrayList<AbstractMap.SimpleEntry<Boolean, Integer>>(nbServers);
+		List<AbstractMap.SimpleEntry<Boolean, Integer>> results = new ArrayList<AbstractMap.SimpleEntry<Boolean, Integer>>();
 
 		/* For each server, send data in a different thread */
 		for(int i = 0; i < nbServers; i++){
 			myThreads[i] = new Thread(){
 				public void run(){
-					try{
+					
 						/* Sends data and receives the computing result in results[i] */
 						for(int i = 0; i < nbServers; i++){
-							results.set(i, serverStubs[i].sendWork(subLists.get(i)));
+							
+							ArrayList<AbstractMap.SimpleEntry<String, Integer>> message = new ArrayList<AbstractMap.SimpleEntry<String, Integer>>(subLists.get(i));
+							
+							AbstractMap.SimpleEntry<Boolean, Integer> entry = new AbstractMap.SimpleEntry<Boolean, Integer>(false, 0);
+							
+							try{
+								entry = serverStubs[i].sendWork( message );
+							} catch(RemoteException e){
+								System.err.println("Error sending data to servers: " + e.getMessage());
+								distribution(subLists, nbServers);
+							}
+							
+							//System.out.println("entry received : " + Boolean.toString(entry.getKey()) + " " + Integer.toString(entry.getValue()));
+							results.add(entry);
 						}
-						/* Wait for thread to finish */
-						for(int i = 0; i < nbServers; i++){
-							myThreads[i].join();
-						}
-					} catch(RemoteException e){
-
-						System.err.println("Error sending data to servers: " + e.getMessage());
-						distribution(subLists, nbServers);
-
-					} catch(InterruptedException e){
-
-						System.err.println("Error receiving server results: " + e.getMessage());
-					}
+						
+					
 				}
 			};
 			/* Activates thread */
 			myThreads[i].start();
 		}
-
-		/* Verify sub results validity */
-		verifyResults(subLists, nbServers);	
+		
+		/* Wait for thread to finish */
+		for(int i = 0; i < nbServers; i++){
+			try{
+				myThreads[i].join();
+			} catch(InterruptedException e){
+				System.err.println("Error receiving server results: " + e.getMessage());
+			}
+		}
+		
+		return results;
 	}
 
 	/*
@@ -229,13 +239,13 @@ public class Client {
 	*
 	*	Description: Verifies if the sub results are all valid/accepted. If not, returns to distribution function.
 	*/
-	private void verifyResults(ArrayList<ArrayList<AbstractMap.SimpleEntry<String, Integer>>> subLists, int nbServers){
-		
+	private boolean verifyResults(List<AbstractMap.SimpleEntry<Boolean, Integer>> results){
 		for(int i = 0; i < nbServers; i++){
-			if(results.get(i).getKey() == false){
-				distribution(subLists, nbServers);
+			if(results.get(i).getKey().equals(false)){
+				return false;
 			}
 		}
+		return true;
 	}
 
 	/*
@@ -246,12 +256,16 @@ public class Client {
 	*
 	*	Description: Computes the final results, applies the final modulo 4000 to avoid overflow and displays it to the user.
 	*/
-	private void finalAnswer(int nbServers){
+	private void finalAnswer(List<AbstractMap.SimpleEntry<Boolean, Integer>> results){
 
 		long finalResult = 0;
 
 		for(int i = 0; i < nbServers; i++){
-			finalResult += results.get(i).getValue();
+			//System.out.println("Result size " + Integer.toString(results.size()));
+			if (i < results.size()){
+				System.out.println("Resultat du serveur " + Integer.toString(i) + " : " + Integer.toString(results.get(i).getValue()));
+				finalResult += results.get(i).getValue();
+			}
 		}
 
 		finalResult = finalResult%4000;
@@ -286,7 +300,7 @@ public class Client {
 		}
 
 		/* Number of computing servers */
-		int nbServers = args.length - 2;
+		nbServers = args.length - 2;
 		myThreads = new Thread[nbServers];
 
 		/* Server stubs loading */
@@ -295,13 +309,18 @@ public class Client {
 		}
 
 		/* Sublists to split task between the servers */
-		ArrayList<ArrayList<AbstractMap.SimpleEntry<String, Integer>>> subLists = new ArrayList<ArrayList<AbstractMap.SimpleEntry<String, Integer>>>(nbServers);
+		List<List<AbstractMap.SimpleEntry<String, Integer>>> subLists = new ArrayList<List<AbstractMap.SimpleEntry<String, Integer>>>(nbServers);
 
 		/* Determine work redistribution (need to keep doing that whenever something fails?)*/
-		distribution(subLists, nbServers);
+		List<AbstractMap.SimpleEntry<Boolean, Integer>> results;
+		do{
+			results = distribution(subLists, nbServers);
+		}
+		while( !verifyResults(results));
+
 
 		/* Display final answer */
-		finalAnswer(nbServers);
+		finalAnswer(results);
 	}
 	
 }

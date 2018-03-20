@@ -1,11 +1,1 @@
-pushd $(dirname $0) > /dev/null
-basepath=$(pwd)
-popd > /dev/null
-
-# Option a ajustet et ajouter pour lancer un serveur a distance.
-#  -Djava.rmi.server.hostname=mycomputer.example.com \
-
-java -cp "$basepath"/server.jar:"$basepath"/ServerInterface.jar \
-  -Djava.rmi.server.codebase=file:"$basepath"/ServerInterface.jar \
-  -Djava.security.policy="$basepath"/policy \
-  tp2.Server $*
+java -cp ./server.jar:./ServerInterface.jar  -Djava.rmi.server.codebase=file:./ServerInterface.jar -Djava.security.policy=./policy  tp2.Server $*
