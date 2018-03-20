@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.io.*;
 
+
 import tp2.ServerInterface;
 import tp2.Operations;
 
@@ -87,10 +88,11 @@ public class Server implements ServerInterface {
 	
 	// receives and and does the work depending on server parameters
 	@Override
-	public Result sendWork(Data[] data) throws RemoteException {
+	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(Data[] data) throws RemoteException {
 		
 		// a result object that will be sent back
-		Result result = new Result();
+		boolean accepted = false;
+		int result = 0;
 		
 		// workload size (number of operations)
 		int u = data.length;
@@ -100,26 +102,26 @@ public class Server implements ServerInterface {
 		
 		// if the server defects, it stops here
 		if (random.nextFloat() < chanceToDefect){
-			result.accepted = false; 
+			accepted = false; 
 		}
 		else{
 			
 			// otherwise the work is accepted
-			result.accepted = true;
+			accepted = true;
 			
 			// there's still the chance that it sends back the wrong answer
 			if (random.nextFloat() < m){
 				// a random wrong answer
-				result.value = (random.nextInt()%4000);
+				result = (random.nextInt()%4000);
 			}
 			else {
 				
 				// otherwise we compute and send the right answer
-				result.value = execute(data);
+				result = execute(data);
 			}
 		}
 		
-		return result;
+		return new AbstractMap.SimpleEntry<Boolean, Integer>(accepted, result);
 	}
 	
 	// the computation function

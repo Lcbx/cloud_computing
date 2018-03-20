@@ -10,12 +10,9 @@ class Data{
 	int value;
 }
 
-class Result{
-	boolean accepted;
-	int value;
-}
+
 
 public interface ServerInterface extends Remote {
 	public int getWorkCapacity() throws RemoteException;
-	public Result sendWork(Data[] data) throws RemoteException;
+	public AbstractMap.SimpleEntry<Boolean, Integer> sendWork(Data[] data) throws RemoteException; // accepted work, result
 }

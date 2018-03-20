@@ -13,12 +13,12 @@
 		</copy>
 	</target>
 	<target name="clean">
-		<delete dir="bin" />
 		<delete file="LDAP.jar" />
 		<delete file="server.jar" />
 		<delete file="client.jar" />
 		<delete file="ServerInterface.jar" />
 		<delete file="LDAPInterface.jar" />
+		<delete dir="bin" />
 	</target>
 	<target depends="init" name="build-class">
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
