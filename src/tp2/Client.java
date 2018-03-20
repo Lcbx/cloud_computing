@@ -23,8 +23,15 @@ public class Client {
 	*	Description: Main function of class Client
 	*/
 	public static void main(String[] args) {
+		
+		long startTime = System.currentTimeMillis();
+      
 		Client client = new Client();
 		client.run(args);
+		
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		System.out.println(elapsedTime);
 	}
 	
 	/* Declaration of 4 serverStubs, 4 being the maximum number of servers used in this experiment */
@@ -154,6 +161,7 @@ public class Client {
 			for(int i = 0; i < nbServers; i++){
 				capacities[i] = serverStubs[i].getWorkCapacity();
 				totalCapacities += capacities[i];
+				System.out.println(capacities[i]);
 			}
 		} catch(RemoteException e){
 			System.err.println("Error getting work capacities or servers: " + e.getMessage());
@@ -340,12 +348,12 @@ public class Client {
 		/* Number of computing servers */
 		nbServers = args.length - 2;
 		myThreads = new Thread[nbServers];
-
+		
 		/* Server stubs loading */
 		for(int i = 0; i < nbServers; i++){
 			serverStubs[i] = loadServerStub(args[i+2]);
 		}
-
+		
 		/* Sublists to split task between the servers */
 		List<List<AbstractMap.SimpleEntry<String, Integer>>> subLists = distribution();
 
