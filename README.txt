@@ -2,10 +2,9 @@ Client.java est le repartiteur
 ServeurInterface est l'interface reseau
 Server est le serveur de calcul
 
-start.sh build les classes, lance rmiregistry, et pourra faire les expériences pour nous
-(lancer les différents serveurs de calcul et le repariteur sur la meme machine est le plus simple quoique lent)
+start.sh build les classes, lance rmiregistry, et eventuellement aurait pu faire les expériences pour nous
 
-pour lancer un main à partir du jar, utiliser les fichiers client et server ;
+pour lancer lea differents programmes, utiliser les fichiers client, LDAP et server ;
 Ex ./client <params> (ce sont des fichiers bash, ouvrez-les dans un  éditeur de texte pour voir les commandes utilisées)
 
 Pour le repartiteur, voici les arguments :
@@ -13,3 +12,5 @@ Pour le repartiteur, voici les arguments :
 
 Pour le server, voici les arguments:
 [serverName] [int port] [int workCapacity] [float maliciousness]
+
+Pas d'arguments pour LDAP (le code correspondant dans server et client n'est pas la)

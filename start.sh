@@ -2,7 +2,6 @@
 
 ant
 
+cd ./bin
 # start the rmiregistry
 "$JAVA_HOME/bin/rmiregistry" &
-
-
